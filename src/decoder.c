@@ -10,6 +10,13 @@ void decode_instruction(Instruction inst)
     uint32_t rs2 = (inst.raw >> 20) & 0x1F;
     uint32_t funct7 = (inst.raw >> 25) & 0x7F;
     int32_t imm = (int32_t)inst.raw >> 20;
+    int32_t s_imm = (((inst.raw >> 25) & 0x7F) << 5) |
+                ((inst.raw >> 7) & 0x1F);
+    int32_t b_imm =
+    (((inst.raw >> 31) & 0x1) << 12) |
+    (((inst.raw >> 7) & 0x1) << 11) |
+    (((inst.raw >> 25) & 0x3F) << 5) |
+    (((inst.raw >> 8) & 0xF) << 1);
 
 if (opcode == 0x13)
 {
@@ -74,6 +81,47 @@ else if (opcode == 0x33)
     else
     {
         printf("Unknown R-type instruction\n");
+    }
+}
+else if (opcode == 0x23)
+{
+    if (funct3 == 2)
+    {
+        printf("0x%08X %08X sw x%d, %d(x%d)\n",
+               inst.address,
+               inst.raw,
+               rs2,
+               s_imm,
+               rs1);
+    }
+    else
+    {
+        printf("Unknown store instruction\n");
+    }
+}
+else if (opcode == 0x63)
+{
+    if (funct3 == 0)
+    {
+        printf("0x%08X %08X beq x%d, x%d, %d\n",
+               inst.address,
+               inst.raw,
+               rs1,
+               rs2,
+               b_imm);
+    }
+    else if (funct3 == 1)
+    {
+        printf("0x%08X %08X bne x%d, x%d, %d\n",
+               inst.address,
+               inst.raw,
+               rs1,
+               rs2,
+               b_imm);
+    }
+    else
+    {
+        printf("Unknown branch instruction\n");
     }
 }
     else
