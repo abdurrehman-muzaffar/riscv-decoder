@@ -12,19 +12,31 @@ void decode_instruction(Instruction inst)
     int32_t imm = (int32_t)inst.raw >> 20;
     int32_t s_imm = (((inst.raw >> 25) & 0x7F) << 5) |
                 ((inst.raw >> 7) & 0x1F);
+    if (s_imm & (1 << 11))
+{
+    s_imm |= ~0xFFF;
+}
     int32_t b_imm =
     (((inst.raw >> 31) & 0x1) << 12) |
     (((inst.raw >> 7) & 0x1) << 11) |
     (((inst.raw >> 25) & 0x3F) << 5) |
     (((inst.raw >> 8) & 0xF) << 1);
+    if (b_imm & (1 << 12))
+{
+    b_imm |= ~0x1FFF;
+}
     uint32_t u_imm = inst.raw & 0xFFFFF000;
     int32_t j_imm =
     (((inst.raw >> 31) & 0x1) << 20) |
     (((inst.raw >> 12) & 0xFF) << 12) |
     (((inst.raw >> 20) & 0x1) << 11) |
     (((inst.raw >> 21) & 0x3FF) << 1);
+    if (j_imm & (1 << 20))
+{
+    j_imm |= ~0x1FFFFF;
+}
 
-if (opcode == 0x13)
+if (opcode == OP_I_TYPE)
 {
     if (funct3 == 0)
     {
@@ -43,10 +55,12 @@ if (opcode == 0x13)
     }
     else
     {
-        printf("Unknown I-type instruction\n");
+        printf("0x%08X %08X UNKNOWN\n",
+        inst.address,
+        inst.raw);
     }
 }
-else if (opcode == 0x03)
+else if (opcode == OP_LOAD)
 {
     if (funct3 == 2)
     {
@@ -59,10 +73,12 @@ else if (opcode == 0x03)
     }
     else
     {
-        printf("Unknown load instruction\n");
+        printf("0x%08X %08X UNKNOWN\n",
+       inst.address,
+       inst.raw);
     }
 }
-else if (opcode == 0x33)
+else if (opcode == OP_R_TYPE)
 {
     if (funct3 == 0 && funct7 == 0)
     {
@@ -86,10 +102,12 @@ else if (opcode == 0x33)
     }
     else
     {
-        printf("Unknown R-type instruction\n");
+        printf("0x%08X %08X UNKNOWN\n",
+       inst.address,
+       inst.raw);
     }
 }
-else if (opcode == 0x23)
+else if (opcode == OP_STORE)
 {
     if (funct3 == 2)
     {
@@ -102,10 +120,12 @@ else if (opcode == 0x23)
     }
     else
     {
-        printf("Unknown store instruction\n");
+        printf("0x%08X %08X UNKNOWN\n",
+       inst.address,
+       inst.raw);
     }
 }
-else if (opcode == 0x63)
+else if (opcode == OP_BRANCH)
 {
     if (funct3 == 0)
     {
@@ -127,10 +147,12 @@ else if (opcode == 0x63)
     }
     else
     {
-        printf("Unknown branch instruction\n");
+        printf("0x%08X %08X UNKNOWN\n",
+       inst.address,
+       inst.raw);
     }
 }
-else if (opcode == 0x37)
+else if (opcode == OP_LUI)
 {
     printf("0x%08X %08X lui x%d, 0x%X\n",
            inst.address,
@@ -138,7 +160,7 @@ else if (opcode == 0x37)
            rd,
            u_imm);
 }
-else if (opcode == 0x6F)
+else if (opcode == OP_JAL)
 {
     printf("0x%08X %08X jal x%d, %d\n",
            inst.address,
@@ -148,6 +170,8 @@ else if (opcode == 0x6F)
 }
     else
     {
-        printf("Unknown opcode: 0x%X\n", opcode);
+        printf("0x%08X %08X UNKNOWN\n",
+       inst.address,
+       inst.raw);
     }
 }
