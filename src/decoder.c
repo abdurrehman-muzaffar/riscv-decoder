@@ -17,6 +17,12 @@ void decode_instruction(Instruction inst)
     (((inst.raw >> 7) & 0x1) << 11) |
     (((inst.raw >> 25) & 0x3F) << 5) |
     (((inst.raw >> 8) & 0xF) << 1);
+    uint32_t u_imm = inst.raw & 0xFFFFF000;
+    int32_t j_imm =
+    (((inst.raw >> 31) & 0x1) << 20) |
+    (((inst.raw >> 12) & 0xFF) << 12) |
+    (((inst.raw >> 20) & 0x1) << 11) |
+    (((inst.raw >> 21) & 0x3FF) << 1);
 
 if (opcode == 0x13)
 {
@@ -123,6 +129,22 @@ else if (opcode == 0x63)
     {
         printf("Unknown branch instruction\n");
     }
+}
+else if (opcode == 0x37)
+{
+    printf("0x%08X %08X lui x%d, 0x%X\n",
+           inst.address,
+           inst.raw,
+           rd,
+           u_imm);
+}
+else if (opcode == 0x6F)
+{
+    printf("0x%08X %08X jal x%d, %d\n",
+           inst.address,
+           inst.raw,
+           rd,
+           j_imm);
 }
     else
     {
