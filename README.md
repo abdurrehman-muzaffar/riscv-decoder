@@ -2,11 +2,9 @@
 
 ## Project Description
 
-This project is a RISC-V RV32I instruction decoder written in C.
+This project is a RISC-V RV32I instruction decoder written in C. It reads 32-bit hexadecimal machine instructions from a text file, decodes them according to the RV32I instruction format, and prints the corresponding assembly instruction.
 
-It reads 32-bit hexadecimal machine instructions from a text file, decodes them according to the RV32I instruction format, and prints the corresponding assembly instruction.
-
-The project was developed as part of the MEDS Module 2 Grand Assignment.
+The project was developed as part of the Module 2 Grand Assignment.
 
 ---
 
@@ -21,12 +19,17 @@ riscv-decoder/
 │   └── memory.h
 │
 ├── src/
+│   ├── main.c
 │   ├── decoder.c
-│   ├── memory.c
-│   └── main.c
+│   └── memory.c
 │
 ├── test/
 │   └── programs/
+│       ├── branch.hex
+│       ├── i_type.hex
+│       ├── mixed.hex
+│       ├── r_type.hex
+│       └── sample.hex
 │
 ├── docs/
 │   └── DESIGN.md
@@ -40,10 +43,16 @@ riscv-decoder/
 
 ## Build Instructions
 
-### Using GCC
+Build the project using the provided Makefile:
 
 ```bash
-gcc src/main.c src/decoder.c src/memory.c -Iinclude -o decoder.exe
+make
+```
+
+To remove generated files:
+
+```bash
+make clean
 ```
 
 ---
@@ -52,10 +61,8 @@ gcc src/main.c src/decoder.c src/memory.c -Iinclude -o decoder.exe
 
 Run the decoder by providing a hexadecimal instruction file.
 
-Example:
-
 ```bash
-decoder.exe test/programs/mixed.hex
+./decoder test/programs/mixed.hex
 ```
 
 ---
@@ -111,3 +118,17 @@ Loaded 9 instructions
 ### J-Type
 
 - jal
+
+---
+
+## Notes
+
+- The project uses a modular design with separate source and header files.
+- Include guards are used in all header files.
+- Unknown instructions are reported as `UNKNOWN`.
+- Immediate values for I-type, S-type, B-type, and J-type instructions are correctly sign-extended.
+- During development on Windows, the project was also compiled manually using:
+
+```bash
+gcc src/main.c src/decoder.c src/memory.c -Iinclude -o decoder.exe
+```
